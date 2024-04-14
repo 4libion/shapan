@@ -90,6 +90,22 @@ class UserView(APIView):
 
 class UserAddArticlesView(APIView):
     def patch(self, request):
+        token = request.headers['Authorization']
+        token = token.split("Bearer ")
+
+        if len(token) < 2:
+            raise AuthenticationFailed('Not authenticated')
+
+        token = token[1]
+
+        if not token:
+            raise AuthenticationFailed('Not authenticated')
+        
+        try:
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Not authenticated')
+        
         user = get_object_or_404(User, pk=request.data.get("user_id"))
         serializer = UserArticleSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
@@ -100,6 +116,22 @@ class UserAddArticlesView(APIView):
 
 class UserAddRoadmapView(APIView):
     def patch(self, request):
+        token = request.headers['Authorization']
+        token = token.split("Bearer ")
+
+        if len(token) < 2:
+            raise AuthenticationFailed('Not authenticated')
+
+        token = token[1]
+
+        if not token:
+            raise AuthenticationFailed('Not authenticated')
+        
+        try:
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Not authenticated')
+        
         user = get_object_or_404(User, pk=request.data.get("user_id"))
         serializer = UserRoadmapSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
